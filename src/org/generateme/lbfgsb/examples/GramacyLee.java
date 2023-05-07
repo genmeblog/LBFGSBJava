@@ -8,18 +8,14 @@ import org.generateme.lbfgsb.LBFGSB;
 import org.generateme.lbfgsb.LBFGSBException;
 import org.generateme.lbfgsb.Parameters;
 
-// Parabola, f(x)=2x^2-x+3
-// Global minimum: f(0.25) = 2.875
-public class Parabola implements IGradFunction {
+// Gramacy & Lee (2012)
+// https://www.sfu.ca/~ssurjano/grlee12.html
+public class GramacyLee implements IGradFunction {
+	public double evaluate(double[] in) {
+		double x = in[0];
 
-	public double evaluate(double[] x, double[] grad) {
-		double xx = x[0];
-		grad[0] = 4 * xx - 1;
-		return 2 * xx * xx - xx + 3;
-	}
-
-	public boolean in_place_gradient() {
-		return true;
+		double v = (x-1)*(x-1);
+		return Math.sin(10.0*Math.PI*x)/(2.0*x)+v*v;
 	}
 
 	public static void main(String[] args) {
@@ -27,11 +23,15 @@ public class Parabola implements IGradFunction {
 		Debug.DEBUG = true;
 		
 		Parameters param = new Parameters();
+		param.max_linesearch = 1000;
 		LBFGSB lbfgsb = new LBFGSB(param);
 
-		// converges to global minimum
+		// a lot of fails in line search
+		
 		try {
-			double[] res = lbfgsb.minimize(new Parabola(), new double[] { -2 }, new double[] { -5 }, new double[] { 5 });
+			double[] res = lbfgsb.minimize(new GramacyLee(), new double[] { 0.5 }, new double[] { 0.5 },
+					new double[] { 2.5 });
+
 			debug('!', "RESULT");
 			debug("k = " + lbfgsb.k);
 			debug("x = ", res);
@@ -40,6 +40,6 @@ public class Parabola implements IGradFunction {
 		} catch (LBFGSBException e) {
 			e.printStackTrace();
 		}
-	}
 
+	}
 }

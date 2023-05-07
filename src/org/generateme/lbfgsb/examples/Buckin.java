@@ -8,30 +8,32 @@ import org.generateme.lbfgsb.LBFGSB;
 import org.generateme.lbfgsb.LBFGSBException;
 import org.generateme.lbfgsb.Parameters;
 
-// Parabola, f(x)=2x^2-x+3
-// Global minimum: f(0.25) = 2.875
-public class Parabola implements IGradFunction {
+// BUKIN FUNCTION N. 6
+// https://www.sfu.ca/~ssurjano/bukin6.html
+// f(-10,1) = 0;
+public class Buckin implements IGradFunction {
+  public double evaluate(double[] in) {
+  	double x1 = in[0];
+  	double x2 = in[1];
+  	
+  	return 100.0 * Math.sqrt(Math.abs(x2 - 0.01*x1*x1)) + 0.01 * Math.abs(x1 + 10.0);
+  }
 
-	public double evaluate(double[] x, double[] grad) {
-		double xx = x[0];
-		grad[0] = 4 * xx - 1;
-		return 2 * xx * xx - xx + 3;
-	}
+  public static void main(String[] args) {
 
-	public boolean in_place_gradient() {
-		return true;
-	}
-
-	public static void main(String[] args) {
-
-		Debug.DEBUG = true;
-		
+  	Debug.DEBUG = true;
+  	
 		Parameters param = new Parameters();
 		LBFGSB lbfgsb = new LBFGSB(param);
 
-		// converges to global minimum
+		// FAILS
+		
 		try {
-			double[] res = lbfgsb.minimize(new Parabola(), new double[] { -2 }, new double[] { -5 }, new double[] { 5 });
+			double[] res = lbfgsb.minimize(new Buckin(),
+					new double[] { -10.1, 1 },
+					new double[] { -15, -3},
+					new double[] { -5, 3});
+
 			debug('!', "RESULT");
 			debug("k = " + lbfgsb.k);
 			debug("x = ", res);
@@ -40,6 +42,8 @@ public class Parabola implements IGradFunction {
 		} catch (LBFGSBException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 }
+

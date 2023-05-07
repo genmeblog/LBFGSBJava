@@ -88,9 +88,9 @@ public final class LineSearch {
 	public static final double deltal = 1.1;
 	public static final double deltau = 0.66;
 
-	public static final double step_selection(double al, double au, double at, double fl, double fu, double ft,
-			double gl, double gu, double gt) {
-		
+	public static final double step_selection(double al, double au, double at, double fl, double fu, double ft, double gl,
+			double gu, double gt) {
+
 		if (al == au)
 			return al;
 
@@ -100,7 +100,7 @@ public final class LineSearch {
 		Bool ac_exists = new Bool();
 		double ac = cubic_minimizer(al, at, fl, ft, gl, gt, ac_exists);
 		double aq = quadratic_minimizer(al, at, fl, gl, ft);
-		
+
 		if (ft > fl) {
 			if (!ac_exists.b)
 				return aq;
@@ -114,8 +114,7 @@ public final class LineSearch {
 			return (Math.abs(ac - at) >= Math.abs(as - at)) ? ac : as;
 
 		if (Math.abs(gt) < Math.abs(gl)) {
-			double res = ac_exists.b && (((ac - at) * (at - al)) > 0.0) && (Math.abs(ac - at) < Math.abs(as - at)) ? ac
-					: as;
+			double res = ac_exists.b && (((ac - at) * (at - al)) > 0.0) && (Math.abs(ac - at) < Math.abs(as - at)) ? ac : as;
 			return (at > al) ? Math.min(at + deltau * (au - at), res) : Math.max(at + deltau * (au - at), res);
 		}
 
@@ -131,11 +130,23 @@ public final class LineSearch {
 
 	public LineSearch(IGradFunction f, Parameters param, double[] xp, double[] drt, double step_max, double _step,
 			double _fx, double[] grad, double _dg, double[] x) throws LBFGSBException {
-		if(DEBUG) debug('-', "line search");
-	
+		if (DEBUG) {
+			debug('-', "line search");
+			debug("      xp: ", xp);
+			debug("       x: ", x);
+			debug("      fx: " + _fx);
+			debug("    grad: ", grad);
+			debug("      dg: " + _dg);
+			debug("    step: " + _step);
+			debug("step_max: " + step_max);
+			debug("     drt: ", drt);
+		}
+
 		fx = _fx;
 		step = _step;
 		dg = _dg;
+
+		double last_step = step;
 
 		if (step <= 0.0)
 			throw new LBFGSBException("step must be positive, step=" + step);
@@ -144,10 +155,9 @@ public final class LineSearch {
 
 		double fx_init = fx;
 		double dg_init = dg;
-		
+
 		if (dg_init >= 0.0)
-			throw new LBFGSBException(
-					"the moving direction does not decrease the objective function value, dg=" + dg_init);
+			throw new LBFGSBException("the moving direction does not decrease the objective function value, dg=" + dg_init);
 
 		double test_decr = param.ftol * dg_init;
 		double test_curv = -param.wolfe * dg_init;
@@ -161,16 +171,43 @@ public final class LineSearch {
 
 		fx = f.eval(x, grad);
 		dg = Vector.dot(grad, drt);
-		
+
+		if (DEBUG) {
+			debug("-> before wolfe and loop");
+			debug("test_decr: " + test_decr);
+			debug("test_curv: " + test_curv);
+			debug("        x: ", x);
+			debug("       fx: " + fx);
+			debug("     grad: ", grad);
+			debug("       dg: " + dg);
+			debug(
+					"wolfe cond 1: " + fx + " <= " + (fx_init + step * test_decr) + " == " + (fx <= fx_init + step * test_decr));
+			debug("wolfe cond 2: " + Math.abs(dg) + " <= " + test_curv + " == " + (Math.abs(dg) <= test_curv));
+		}
+
 		if ((fx <= fx_init + step * test_decr) && (Math.abs(dg) <= test_curv)) {
-			if(DEBUG) debug('-', "leaving line search, criteria met");
+			if (DEBUG)
+				debug('-', "leaving line search, criteria met");
 			return;
 		}
+
+		if (Math.abs(dg) <= test_curv) {
+			last_step = step;
+		}
+
+		if (DEBUG)
+			debug("-> entering loop");
 
 		int iter;
 		for (iter = 0; iter < param.max_linesearch; iter++) {
 			double ft = fx - fx_init - step * test_decr;
 			double gt = dg - param.ftol * dg_init;
+
+			if (DEBUG) {
+				debug("iter: " + iter);
+				debug("  ft: " + ft);
+				debug("  gt: " + gt);
+			}
 
 			double new_step;
 			if (ft > fI_lo) {
@@ -182,12 +219,22 @@ public final class LineSearch {
 				I_hi = step;
 				fI_hi = ft;
 				gI_hi = gt;
+
+				if (DEBUG) {
+					debug("-- case 1, " + ft + " > " + fI_lo);
+					debug("-- new_step: " + new_step);
+				}
 			} else if (gt * (I_lo - step) > 0.0) {
 				new_step = Math.min(step_max, step + delta * (step - I_lo));
 
 				I_lo = step;
 				fI_lo = ft;
 				gI_lo = gt;
+
+				if (DEBUG) {
+					debug("-- case 2, " + (gt * (I_lo - step)) + " > 0.0");
+					debug("-- new_step: " + new_step);
+				}
 			} else {
 				new_step = step_selection(I_lo, I_hi, step, fI_lo, fI_hi, ft, gI_lo, gI_hi, gt);
 
@@ -198,10 +245,16 @@ public final class LineSearch {
 				I_lo = step;
 				fI_lo = ft;
 				gI_lo = gt;
+
+				if (DEBUG) {
+					debug("-- case 3");
+					debug("-- new_step: " + new_step);
+				}
 			}
 
 			if (step == step_max && new_step >= step_max) {
-				if(DEBUG) debug('-', "leaving line search, maximum step size reached");
+				if (DEBUG)
+					debug('-', "leaving line search, maximum step size reached");
 				return;
 			}
 
@@ -209,6 +262,7 @@ public final class LineSearch {
 
 			if (step < param.min_step)
 				throw new LBFGSBException("the line search step became smaller than the minimum value allowed");
+
 			if (step > param.max_step)
 				throw new LBFGSBException("the line search step became larger than the maximum value allowed");
 
@@ -217,21 +271,37 @@ public final class LineSearch {
 			}
 			fx = f.eval(x, grad);
 			dg = Vector.dot(grad, drt);
-			
+
+			if (DEBUG) {
+				debug("     x: ", x);
+				debug("    fx: " + fx);
+				debug("  grad: ", grad);
+				debug("    dg: " + dg);
+				debug("  wolfe cond 1: " + fx + " <= " + (fx_init + step * test_decr) + " == "
+						+ (fx <= fx_init + step * test_decr));
+				debug("  wolfe cond 2: " + Math.abs(dg) + " <= " + test_curv + " == " + (Math.abs(dg) <= test_curv));
+			}
+
 			if ((fx <= fx_init + step * test_decr) && (Math.abs(dg) <= test_curv)) {
-				if(DEBUG) debug('-', "leaving line search, criteria met (2)");
+				if (DEBUG)
+					debug('-', "leaving line search, criteria met (2)");
 				return;
+			}
+
+			if (Math.abs(dg) <= test_curv) {
+				last_step = step;
 			}
 
 			if (step >= step_max) {
 				double ft2 = fx - fx_init - step * test_decr;
-				if(ft2 <= fI_lo) {
-					if(DEBUG) debug('-', "leaving line search, maximum step size reached (2)");
+				if (ft2 <= fI_lo) {
+					if (DEBUG)
+						debug('-', "leaving line search, maximum step size reached (2)");
 					return;
 				}
 			}
 		}
-		
+
 		throw new LBFGSBException("the line search routine reached the maximum number of iterations");
 	}
 }

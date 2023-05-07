@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 public class Debug {
-	public static final boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	// array and matrix cell formatting
 	private static final String cellfmt = "%12s";
 	// number formatting

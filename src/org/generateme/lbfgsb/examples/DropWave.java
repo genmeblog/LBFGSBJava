@@ -8,18 +8,16 @@ import org.generateme.lbfgsb.LBFGSB;
 import org.generateme.lbfgsb.LBFGSBException;
 import org.generateme.lbfgsb.Parameters;
 
-// Parabola, f(x)=2x^2-x+3
-// Global minimum: f(0.25) = 2.875
-public class Parabola implements IGradFunction {
+// DROP-WAVE
+// https://www.sfu.ca/~ssurjano/drop.html
+// f(0,0)=-1
+public class DropWave implements IGradFunction {
+	public double evaluate(double[] in) {
+		double x1 = in[0];
+		double x2 = in[1];
 
-	public double evaluate(double[] x, double[] grad) {
-		double xx = x[0];
-		grad[0] = 4 * xx - 1;
-		return 2 * xx * xx - xx + 3;
-	}
-
-	public boolean in_place_gradient() {
-		return true;
+		double v = x1*x1+x2*x2;
+		return - (1.0 + Math.cos(12.0*v)) / (0.5 * v + 2.0);
 	}
 
 	public static void main(String[] args) {
@@ -29,9 +27,10 @@ public class Parabola implements IGradFunction {
 		Parameters param = new Parameters();
 		LBFGSB lbfgsb = new LBFGSB(param);
 
-		// converges to global minimum
 		try {
-			double[] res = lbfgsb.minimize(new Parabola(), new double[] { -2 }, new double[] { -5 }, new double[] { 5 });
+			double[] res = lbfgsb.minimize(new DropWave(), new double[] { -0.1, 0.1 }, new double[] { -5, -5 },
+					new double[] { 5, 5 });
+
 			debug('!', "RESULT");
 			debug("k = " + lbfgsb.k);
 			debug("x = ", res);
@@ -40,6 +39,7 @@ public class Parabola implements IGradFunction {
 		} catch (LBFGSBException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 }

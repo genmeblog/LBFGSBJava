@@ -13,7 +13,7 @@ public final class Cauchy {
 	public ArrayList<Integer> fv_set;
 
 	public static final double eps = Math.ulp(1.0);
-	
+
 	public static final int search_greater(double[] brk, ArrayList<Integer> ord, double t, int start) {
 		int nord = ord.size();
 		int i;
@@ -146,10 +146,10 @@ public final class Cauchy {
 			deltat = iu - il;
 		}
 
-		if(fpp < eps) {
+		if (fpp < eps) {
 			deltatmin = -fp / eps;
 		}
-		
+
 		if (!crossed_all) {
 			deltatmin = Math.max(deltatmin, 0.0);
 			for (int j = 0; j < vecc.length; j++) {
@@ -167,11 +167,12 @@ public final class Cauchy {
 			}
 		}
 
-		if (DEBUG)
+		if (DEBUG) {
 			debug("vecc: ", vecc);
-		debug("xcp: ", xcp);
-		debug("newact_set: " + newact_set);
-		debug("fv_set: " + fv_set);
-		debug('=', "Cauchy - end");
+			debug("xcp: ", xcp);
+			debug("newact_set: " + newact_set);
+			debug("fv_set: " + fv_set);
+			debug('=', "Cauchy - end");
+		}
 	}
 }

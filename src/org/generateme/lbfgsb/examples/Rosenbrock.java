@@ -2,6 +2,7 @@ package org.generateme.lbfgsb.examples;
 
 import static org.generateme.lbfgsb.Debug.debug;
 
+import org.generateme.lbfgsb.Debug;
 import org.generateme.lbfgsb.IGradFunction;
 import org.generateme.lbfgsb.LBFGSB;
 import org.generateme.lbfgsb.LBFGSBException;
@@ -42,6 +43,8 @@ public class Rosenbrock implements IGradFunction {
 
 	public static void main(String[] args) {
 
+		Debug.DEBUG = true;
+		
 		Parameters param = new Parameters();
 		LBFGSB lbfgsb = new LBFGSB(param);
 
