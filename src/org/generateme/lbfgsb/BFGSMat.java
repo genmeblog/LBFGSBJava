@@ -538,7 +538,7 @@ public final class BFGSMat {
 
 		if (DEBUG) {
 			debug("res: ", res);
-			debug('-', "PtBQv - end");
+			debug('-', "PtBP - end");
 		}
 	}
 }

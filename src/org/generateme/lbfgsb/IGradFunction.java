@@ -10,7 +10,7 @@ public interface IGradFunction {
 	}
 	
 	default void gradient(double[] x, double[] grad) {
-		gradient(x,grad,1.0e-6);
+		gradient(x,grad,1.0e-4);
 	}
 	
 	// finite difference, symmetrical gradient, stores result in grad[]
@@ -26,15 +26,14 @@ public interface IGradFunction {
 			x[i] = x2;
 			double y2 = evaluate(x);
 			x[i] = tmp; // restore
-			grad[i] = (y2-y1)/(x2-x1);
+			grad[i] = (y2-y1)/(2.0*eps);
 		}
 	}
 	
 	default boolean in_place_gradient() {
-		return true;
+		return false;
 	}
 
-	
 	default double eval(double[] x, double[] grad) {
 		if(this.in_place_gradient()) {
 			return this.evaluate(x, grad);

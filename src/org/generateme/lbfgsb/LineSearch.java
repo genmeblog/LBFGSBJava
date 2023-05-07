@@ -129,7 +129,7 @@ public final class LineSearch {
 
 	public static final double delta = 1.1;
 
-	public LineSearch(IGradFunction f, Param param, double[] xp, double[] drt, double step_max, double _step,
+	public LineSearch(IGradFunction f, Parameters param, double[] xp, double[] drt, double step_max, double _step,
 			double _fx, double[] grad, double _dg, double[] x) throws LBFGSBException {
 		if(DEBUG) debug('-', "line search");
 	

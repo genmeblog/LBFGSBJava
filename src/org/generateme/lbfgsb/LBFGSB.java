@@ -3,7 +3,7 @@ package org.generateme.lbfgsb;
 import static org.generateme.lbfgsb.Debug.*;
 
 public final class LBFGSB {
-	public Param m_param;
+	public Parameters m_param;
 	public BFGSMat m_bfgs;
 	public double[] m_fx;
 	public double[] m_xp;
@@ -12,6 +12,7 @@ public final class LBFGSB {
 	public double[] m_drt;
 	public double m_projgnorm;
 	public double fx;
+	public int k;
 		
 	public void reset(int n) {
 		m_bfgs.reset(n, m_param.m);
@@ -24,8 +25,8 @@ public final class LBFGSB {
 		}
 	}
 	
-	public LBFGSB() { this(new Param()); }
-	public LBFGSB(Param param) {
+	public LBFGSB() { this(new Parameters()); }
+	public LBFGSB(Parameters param) {
 		this.m_param = param;
 		this.m_bfgs = new BFGSMat();
 	}
@@ -64,8 +65,10 @@ public final class LBFGSB {
 	public static final double eps = Math.ulp(1.0);
 	
 	// f -function, x - initial and final value, lb - lower bounds, ub - upper bounds 
-	public int minimize(IGradFunction f, double[] x, double[] lb, double[] ub) throws LBFGSBException {
+	public double[] minimize(IGradFunction f, double[] in, double[] lb, double[] ub) throws LBFGSBException {
 		if(DEBUG) debug('=', "entering minimization");
+		
+		double[] x = in.clone();
 		
 		int n = x.length;
 		
@@ -92,7 +95,7 @@ public final class LBFGSB {
 	
 		if(m_projgnorm <= m_param.epsilon || m_projgnorm <= m_param.epsilon_rel * Vector.norm(x)) {
 			if(DEBUG) debug('=', "leaving minimization, projgnorm less than epsilon, projgnorm = " + m_projgnorm);
-			return 1;
+			return x;
 		}
 		
 		// Cauchy stores xcp, vecc, newact_set and fv_set
@@ -104,7 +107,7 @@ public final class LBFGSB {
 		double[] vecs = new double[n];
 		double[] vecy = new double[n];
 		
-		int k = 1;
+		k = 1;
 	
 		for(;;) {
 			if(DEBUG) debug('#', "K = " + k);
@@ -139,21 +142,21 @@ public final class LBFGSB {
 			
 			if(m_projgnorm <= m_param.epsilon || m_projgnorm <= m_param.epsilon_rel * Vector.norm(x)) {
 				if(DEBUG) debug('=', "leaving minimization, projgnorm less than epsilons, projgnorm = " + m_projgnorm);
-				return k;
+				return x;
 			}
 		
 			if(fpast > 0 ) {
 				double fxd = this.m_fx[k % fpast];
 				if( k>=fpast && Math.abs(fxd - fx) <= m_param.delta * Math.max(Math.max(Math.abs(fx), Math.abs(fxd)), 1.0) ) {
 					if(DEBUG) debug('=', "leaving minimization, past results less than delta");
-					return k;
+					return x;
 				}
 				this.m_fx[k % fpast] = fx;
 			}
 			
 			if(m_param.max_iterations != 0 && k>=m_param.max_iterations) {
 				if(DEBUG) debug('=', "leaving minimization, max iterations reached");
-				return k;
+				return x;
 			}
 		
 			Vector.sub(x, m_xp, vecs);
