@@ -146,8 +146,6 @@ public final class LineSearch {
 		step = _step;
 		dg = _dg;
 
-		double last_step = step;
-
 		if (step <= 0.0)
 			throw new LBFGSBException("step must be positive, step=" + step);
 		if (step > step_max)
@@ -189,10 +187,6 @@ public final class LineSearch {
 			if (DEBUG)
 				debug('-', "leaving line search, criteria met");
 			return;
-		}
-
-		if (Math.abs(dg) <= test_curv) {
-			last_step = step;
 		}
 
 		if (DEBUG)
@@ -286,10 +280,6 @@ public final class LineSearch {
 				if (DEBUG)
 					debug('-', "leaving line search, criteria met (2)");
 				return;
-			}
-
-			if (Math.abs(dg) <= test_curv) {
-				last_step = step;
 			}
 
 			if (step >= step_max) {
