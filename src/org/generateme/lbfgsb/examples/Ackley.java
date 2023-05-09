@@ -45,7 +45,7 @@ public class Ackley implements IGradFunction {
 	public static void main(String[] args) {
 
 		Debug.DEBUG = true;
-		
+
 		Parameters param = new Parameters();
 		LBFGSB lbfgsb = new LBFGSB(param);
 
@@ -53,8 +53,8 @@ public class Ackley implements IGradFunction {
 //			double[] res = lbfgsb.minimize(new Ackley(), new double[] { 0.5, 0.2, -0.7, 0.7, -0.6 },
 //					new double[] { -32, -32, -32, -32, -32 }, new double[] { 32, 32, 32, 32, 32 });
 //			double[] res = lbfgsb.minimize(new Ackley(), new double[] { 0.65, -0.5, 0.0, 0.5, 0.6 },
-//					new double[] { 0,-10,0,0,0 }, new double[] { 32, 32, 32, 32, 32 });
-			double[] res = lbfgsb.minimize(new Ackley(10),
+//					new double[] { 0, -10, 0, 0, 0 }, new double[] { 32, 32, 32, 32, 32 });
+ 		double[] res = lbfgsb.minimize(new Ackley(10),
 					new double[] { 0.65, -0.5, 0.0, 0.5, 0.2, 0.2, 0.2, -0.2, -0.2, -0.5 },
 					new double[] { -32, -32, -32, -32, 0, -32, -32, -32, -32, -32 },
 					new double[] { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32 });

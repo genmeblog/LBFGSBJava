@@ -30,7 +30,7 @@ public class Bohachevsky2 implements IGradFunction {
 		LBFGSB lbfgsb = new LBFGSB(param);
 
 		try {
-			double[] res = lbfgsb.minimize(new Bohachevsky2(), new double[] { -100,-100 }, new double[] { -100, -100 },
+			double[] res = lbfgsb.minimize(new Bohachevsky2(), new double[] { -10,20 }, new double[] { -100, -100 },
 					new double[] { 100, 100 });
 
 			debug('!', "RESULT");

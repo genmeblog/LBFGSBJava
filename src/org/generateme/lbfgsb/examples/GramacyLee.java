@@ -29,7 +29,7 @@ public class GramacyLee implements IGradFunction {
 		// a lot of fails in line search
 		
 		try {
-			double[] res = lbfgsb.minimize(new GramacyLee(), new double[] { 0.5 }, new double[] { 0.5 },
+			double[] res = lbfgsb.minimize(new GramacyLee(), new double[] { 2.51 }, new double[] { 0.5 },
 					new double[] { 2.5 });
 
 			debug('!', "RESULT");

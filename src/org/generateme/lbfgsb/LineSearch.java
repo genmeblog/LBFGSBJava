@@ -154,9 +154,6 @@ public final class LineSearch {
 		double fx_init = fx;
 		double dg_init = dg;
 
-		if (dg_init >= 0.0)
-			throw new LBFGSBException("the moving direction does not decrease the objective function value, dg=" + dg_init);
-
 		double test_decr = param.ftol * dg_init;
 		double test_curv = -param.wolfe * dg_init;
 		double I_lo = 0.0, I_hi = Double.POSITIVE_INFINITY;

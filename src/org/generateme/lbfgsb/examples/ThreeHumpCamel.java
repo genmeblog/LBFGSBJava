@@ -33,16 +33,17 @@ public final class ThreeHumpCamel implements IGradFunction {
 	public static void main(String[] args) {
 
 		Debug.DEBUG = true;
-		
+
 		Parameters param = new Parameters();
 		LBFGSB lbfgsb = new LBFGSB(param);
 
 		// converges to global minimum
 		try {
-//			double[] res = lbfgsb.minimize(new Camel(), new double[] { -2, -2 }, new double[] { -5, -5 },
-//					new double[] { 5, 5 });
-			double[] res = lbfgsb.minimize(new ThreeHumpCamel(), new double[] { 2, 2 }, new double[] { 0, -5 }, new double[] { 1, 1 });
-			
+			double[] res = lbfgsb.minimize(new ThreeHumpCamel(), new double[] { -5, 5 }, new double[] { -5, -5 },
+					new double[] { 5, 5 });
+//			double[] res = lbfgsb.minimize(new ThreeHumpCamel(), new double[] { 2, 2 }, new double[] { 0, -5 },
+//					new double[] { 1, 1 });
+
 			debug('!', "RESULT");
 			debug("k = " + lbfgsb.k);
 			debug("x = ", res);

@@ -102,7 +102,11 @@ public final class LBFGSB {
 		Cauchy cauchy = new Cauchy(m_bfgs, x, m_grad, lb, ub);
 		
 		Vector.sub(cauchy.xcp, x, m_drt);
-		Vector.normalize(m_drt);
+	//	Vector.normalize(m_drt);
+		
+	//	for(int i=0;i<m_drt.length;i++) {
+	//		m_drt[i] *= 30.0;
+	//	}
 		
 		double[] vecs = new double[n];
 		double[] vecy = new double[n];
@@ -128,11 +132,12 @@ public final class LBFGSB {
 			step_max = Math.min(step_max, m_param.max_step);
 			double step = Math.min(1.0, step_max);
 			
-			LineSearch linesearch = new LineSearch(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
+		//	LineSearch linesearch = new LineSearch(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
+			MoreThuente linesearch = new MoreThuente(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
 			fx = linesearch.fx;
 			step = linesearch.step;
 			dg = linesearch.dg;
-					
+			
 			m_projgnorm = proj_grad_norm(x,m_grad,lb,ub);
 
 			if(DEBUG) debug("  fx:        " + fx);
