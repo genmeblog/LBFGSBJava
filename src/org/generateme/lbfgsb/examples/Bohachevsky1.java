@@ -29,12 +29,10 @@ public class Bohachevsky1 implements IGradFunction {
 		Debug.DEBUG = true;
 				
 		Parameters param = new Parameters();
-		param.max_linesearch = 100;
-		param.wolfe = 0.95;
 		LBFGSB lbfgsb = new LBFGSB(param);
 
 		try {
-			double[] res = lbfgsb.minimize(new Bohachevsky1(), new double[] { -10,0.1 }, new double[] { -100, -100 },
+			double[] res = lbfgsb.minimize(new Bohachevsky1(), new double[] { -100,-50 }, new double[] { -100, -100 },
 					new double[] { 100, 100 });
 
 			debug('!', "RESULT");

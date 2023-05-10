@@ -4,8 +4,7 @@ public final class Parameters {
 	 
 	public enum LINESEARCH {
 		MORETHUENTE_LBFGSPP,
-		MORETHUENTE_ORIG_STRONG,
-		MORETHUENTE_ORIG_WEAK,
+		MORETHUENTE_ORIG,
 		LEWISOVERTON
 	}
 	
@@ -17,10 +16,11 @@ public final class Parameters {
 	public int max_iterations = 1000;
 	public int max_submin = 10;
 	public int max_linesearch = 20;
-	public LINESEARCH linesearch = LINESEARCH.MORETHUENTE_ORIG_WEAK;
+	public LINESEARCH linesearch = LINESEARCH.MORETHUENTE_ORIG;
 	public double xtol = 1.0e-8; // MoreThuente
 	public double min_step = 1.0e-20;
 	public double max_step = 1.0e20;
 	public double ftol = 1.0e-4;
 	public double wolfe = 0.9;
+	public boolean weak_wolfe = true;
 }

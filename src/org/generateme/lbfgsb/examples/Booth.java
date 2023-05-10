@@ -8,28 +8,38 @@ import org.generateme.lbfgsb.LBFGSB;
 import org.generateme.lbfgsb.LBFGSBException;
 import org.generateme.lbfgsb.Parameters;
 
-// https://www.sfu.ca/~ssurjano/boha.html
-public class Bohachevsky2 implements IGradFunction {
-	
-	public double evaluate(double[] in) {
+// https://www.sfu.ca/~ssurjano/booth.html
+// f(1,3) = 0
+public class Booth implements IGradFunction {
+	public double evaluate(double[] in, double[] grad) {
 		double x1 = in[0];
 		double x2 = in[1];
 
-		return x1 * x1 + 2.0 * x2 * x2 - 0.3 * Math.cos(3.0 * Math.PI * x1) * Math.cos(4.0 * Math.PI * x2) + 0.3;
+		double a = x1 + 2.0 * x2 - 7.0;
+		double b = 2.0 * x1 + x2 - 5.0;
+
+		grad[0] = 2.0 * a + 4.0 * b;
+		grad[1] = 4.0 * a + 2.0 * b;
+
+		return a * a + b * b;
 	}
 
+	public boolean in_place_gradient() {
+		return true;
+	}
+	
 	public static void main(String[] args) {
 
 		Debug.DEBUG = true;
 		
 		Parameters param = new Parameters();
-		param.linesearch = Parameters.LINESEARCH.MORETHUENTE_LBFGSPP;
 		LBFGSB lbfgsb = new LBFGSB(param);
 
 		try {
-			double[] res = lbfgsb.minimize(new Bohachevsky2(), new double[] { -50,90 }, new double[] { -100, -100 },
-					new double[] { 100, 100 });
-
+	//		double[] res = lbfgsb.minimize(new Booth(), new double[] { -10,0.1 }, new double[] { -10, -10 },
+	//				new double[] { 10, 10 });
+		double[] res = lbfgsb.minimize(new Booth(), new double[] { -1,-10 }, new double[] { -10, 3 },
+					new double[] { 10, 3.1 });
 			debug('!', "RESULT");
 			debug("k = " + lbfgsb.k);
 			debug("x = ", res);

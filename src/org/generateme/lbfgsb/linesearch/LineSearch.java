@@ -130,7 +130,7 @@ public final class LineSearch extends AbstractLineSearch {
 	public static final double delta = 1.1;
 
 	public LineSearch(IGradFunction f, Parameters param, double[] xp, double[] drt, double step_max, double _step,
-			double _fx, double[] grad, double _dg, double[] x) throws LBFGSBException {
+			double _fx, double[] grad, double _dg, double[] x, boolean weak_wolfe) throws LBFGSBException {
 		if (DEBUG) {
 			debug('-', "line search");
 			debug("      xp: ", xp);
@@ -156,7 +156,7 @@ public final class LineSearch extends AbstractLineSearch {
 		double dg_init = dg;
 
 		double test_decr = param.ftol * dg_init;
-		double test_curv = -param.wolfe * dg_init;
+		double test_curv = param.wolfe * dg_init;
 		double I_lo = 0.0, I_hi = Double.POSITIVE_INFINITY;
 		double fI_lo = 0.0, fI_hi = Double.POSITIVE_INFINITY;
 		double gI_lo = (1.0 - param.ftol) * dg_init, gI_hi = Double.POSITIVE_INFINITY;
@@ -274,7 +274,8 @@ public final class LineSearch extends AbstractLineSearch {
 				debug("  wolfe cond 2: " + Math.abs(dg) + " <= " + test_curv + " == " + (Math.abs(dg) <= test_curv));
 			}
 
-			if ((fx <= fx_init + step * test_decr) && (Math.abs(dg) <= test_curv)) {
+			if ((!weak_wolfe && fx <= fx_init + step * test_decr) && (Math.abs(dg) <= -test_curv)
+					|| (weak_wolfe && fx <= fx_init + step * test_decr) && (Math.abs(dg) >= test_curv)) {
 				if (DEBUG)
 					debug('-', "leaving line search, criteria met (2)");
 				return;

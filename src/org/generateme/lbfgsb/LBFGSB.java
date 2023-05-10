@@ -104,7 +104,9 @@ public final class LBFGSB {
 		Cauchy cauchy = new Cauchy(m_bfgs, x, m_grad, lb, ub);
 		
 		Vector.sub(cauchy.xcp, x, m_drt);
-//		Vector.normalize(m_drt);
+		if(m_param.linesearch == Parameters.LINESEARCH.MORETHUENTE_LBFGSPP) {
+			Vector.normalize(m_drt); // problematic
+		}
 		
 		double[] vecs = new double[n];
 		double[] vecy = new double[n];
@@ -133,17 +135,14 @@ public final class LBFGSB {
 			AbstractLineSearch ls;
 			switch(m_param.linesearch) {
 			case MORETHUENTE_LBFGSPP:
-				ls = new LineSearch(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
-				break;
-			case MORETHUENTE_ORIG_STRONG:
-				ls = new MoreThuente(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x, false);
+				ls = new LineSearch(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x, m_param.weak_wolfe);
 				break;
 			case LEWISOVERTON:
 				ls = new LewisOverton(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
 				break;
-			case MORETHUENTE_ORIG_WEAK:
+			case MORETHUENTE_ORIG:
 			default:
-				ls = new MoreThuente(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x, true);
+				ls = new MoreThuente(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x, m_param.weak_wolfe);
 				break;
 			}
 			

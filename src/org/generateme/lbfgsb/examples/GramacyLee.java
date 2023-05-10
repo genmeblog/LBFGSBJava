@@ -23,13 +23,14 @@ public class GramacyLee implements IGradFunction {
 		Debug.DEBUG = true;
 		
 		Parameters param = new Parameters();
+		param.weak_wolfe = true;
 		param.max_linesearch = 1000;
 		LBFGSB lbfgsb = new LBFGSB(param);
 
 		// a lot of fails in line search
 		
 		try {
-			double[] res = lbfgsb.minimize(new GramacyLee(), new double[] { 0.5 }, new double[] { 0.5 },
+			double[] res = lbfgsb.minimize(new GramacyLee(), new double[] { 0.55 }, new double[] { 0.5 },
 					new double[] { 2.5 });
 
 			debug('!', "RESULT");

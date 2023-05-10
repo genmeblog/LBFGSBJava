@@ -28,7 +28,7 @@ public class Eggholder implements IGradFunction {
 		LBFGSB lbfgsb = new LBFGSB(param);
 
 		try {
-			double[] res = lbfgsb.minimize(new Eggholder(), new double[] { 100, 350 }, new double[] { -512, -512 },
+			double[] res = lbfgsb.minimize(new Eggholder(), new double[] { 500, 350 }, new double[] { -512, -512 },
 					new double[] { 512, 512 });
 
 			debug('!', "RESULT");

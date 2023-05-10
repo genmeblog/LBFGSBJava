@@ -67,7 +67,7 @@ public class MoreThuente extends AbstractLineSearch {
 	public static final int iterfinitemax = (int) (-(Math.log(eps)) / Math.log(2.0));
 
 	public MoreThuente(IGradFunction fun, Parameters param, double[] xp, double[] drt, double step_max, double _step,
-			double _fx, double[] grad, double _dg, double[] x, boolean weakwolfe) throws LBFGSBException {
+			double _fx, double[] grad, double _dg, double[] x, boolean weak_wolfe) throws LBFGSBException {
 		if (DEBUG) {
 			debug('-', "line search");
 			debug("      xp: ", xp);
@@ -180,8 +180,8 @@ public class MoreThuente extends AbstractLineSearch {
 			if (bracketed.b && (stmax - stmin) <= param.xtol * stmax) {
 				info = RESULT.XTOL;
 			}
-			if ((!weakwolfe && f <= ftest && Math.abs(dg) <= -ctest) || // strong wolfe
-					(weakwolfe && f <= ftest && dg >= ctest) // weak wolfe
+			if ((!weak_wolfe && f <= ftest && Math.abs(dg) <= -ctest) || // strong wolfe
+					(weak_wolfe && f <= ftest && dg >= ctest) // weak wolfe
 			) {
 				info = RESULT.CONVERGED;
 			}
