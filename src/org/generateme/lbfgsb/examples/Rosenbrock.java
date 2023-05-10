@@ -47,11 +47,11 @@ public class Rosenbrock implements IGradFunction {
 		
 		Parameters param = new Parameters();
 		LBFGSB lbfgsb = new LBFGSB(param);
-
+		
 		// converges to global minimum
 		try {
 			double[] res = lbfgsb.minimize(new Rosenbrock(), new double[] { 2, -4, 2, 4, -2 },
-					new double[] { -5, Double.NEGATIVE_INFINITY, -5, -5, -1 }, new double[] { 10, 10, 10, 10, 10 });
+					new double[] { -5, -5, -5, -5, -5 }, new double[] { 10, 10, 10, 10, 10 });
 			debug('!', "RESULT");
 			debug("k = " + lbfgsb.k);
 			debug("x = ", res);
@@ -60,6 +60,11 @@ public class Rosenbrock implements IGradFunction {
 		} catch (LBFGSBException e) {
 			e.printStackTrace();
 		}
+
+		Rosenbrock f = new Rosenbrock();
+		double[] g = new double[5];
+ 		debug("res=" + f.eval(new double[] {2,-4,2,4,-2}, g));
+	
 	}
 
 }

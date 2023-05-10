@@ -120,13 +120,14 @@ public class MoreThuente extends AbstractLineSearch {
 		dg = phidphi.dg;
 
 		int iterfinite = 0;
-		while ((Double.isInfinite(fx) || Double.isInfinite(dg)) && (iterfinite < iterfinitemax)) {
+		while ((Double.isInfinite(fx) || Double.isInfinite(dg) || Double.isNaN(fx) || Double.isNaN(dg)) && (iterfinite < iterfinitemax)) {
 			stp = stp / 2.0;
 
 			f = phidphi.evaluate(stp);
 			dg = phidphi.dg;
 
 			stx = stp * 7.0 / 8.0;
+			iterfinite++;
 		}
 
 		if (DEBUG) {
