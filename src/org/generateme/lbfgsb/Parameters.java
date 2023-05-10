@@ -1,6 +1,14 @@
 package org.generateme.lbfgsb;
 
 public final class Parameters {
+	 
+	public enum LINESEARCH {
+		MORETHUENTE_LBFGSPP,
+		MORETHUENTE_ORIG_STRONG,
+		MORETHUENTE_ORIG_WEAK,
+		LEWISOVERTON
+	}
+	
 	public int m = 6;
 	public double epsilon = 1.0e-7;
 	public double epsilon_rel = 1.0e-7;
@@ -9,6 +17,7 @@ public final class Parameters {
 	public int max_iterations = 1000;
 	public int max_submin = 10;
 	public int max_linesearch = 20;
+	public LINESEARCH linesearch = LINESEARCH.MORETHUENTE_ORIG_WEAK;
 	public double xtol = 1.0e-8; // MoreThuente
 	public double min_step = 1.0e-20;
 	public double max_step = 1.0e20;

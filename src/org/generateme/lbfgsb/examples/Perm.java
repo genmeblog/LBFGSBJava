@@ -49,7 +49,7 @@ public class Perm implements IGradFunction {
 		Parameters param = new Parameters();
 		LBFGSB lbfgsb = new LBFGSB(param);
 
-		int d = 2;
+		int d = 3;
 		
 		double[] z = new double[] { 0,0,0};
 		Perm f = new Perm(d);
@@ -57,7 +57,7 @@ public class Perm implements IGradFunction {
 		
 		// converges to global minimum
 		try {
-			double[] res = lbfgsb.minimize(new Perm(d), new double[] { 1,-1 }, new double[] { -d,-d  }, new double[] { d,d });
+			double[] res = lbfgsb.minimize(new Perm(d), new double[] { 1,-1,-3 }, new double[] { -d,-d,-d  }, new double[] { d,d,d });
 			debug('!', "RESULT");
 			debug("k = " + lbfgsb.k);
 			debug("x = ", res);

@@ -2,6 +2,8 @@ package org.generateme.lbfgsb;
 
 import static org.generateme.lbfgsb.Debug.*;
 
+import org.generateme.lbfgsb.linesearch.*;
+
 public final class LBFGSB {
 	public Parameters m_param;
 	public BFGSMat m_bfgs;
@@ -102,11 +104,7 @@ public final class LBFGSB {
 		Cauchy cauchy = new Cauchy(m_bfgs, x, m_grad, lb, ub);
 		
 		Vector.sub(cauchy.xcp, x, m_drt);
-	//	Vector.normalize(m_drt);
-		
-	//	for(int i=0;i<m_drt.length;i++) {
-	//		m_drt[i] *= 30.0;
-	//	}
+//		Vector.normalize(m_drt);
 		
 		double[] vecs = new double[n];
 		double[] vecy = new double[n];
@@ -132,11 +130,26 @@ public final class LBFGSB {
 			step_max = Math.min(step_max, m_param.max_step);
 			double step = Math.min(1.0, step_max);
 			
-		//	LineSearch linesearch = new LineSearch(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
-			MoreThuente linesearch = new MoreThuente(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
-			fx = linesearch.fx;
-			step = linesearch.step;
-			dg = linesearch.dg;
+			AbstractLineSearch ls;
+			switch(m_param.linesearch) {
+			case MORETHUENTE_LBFGSPP:
+				ls = new LineSearch(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
+				break;
+			case MORETHUENTE_ORIG_STRONG:
+				ls = new MoreThuente(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x, false);
+				break;
+			case LEWISOVERTON:
+				ls = new LewisOverton(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x);
+				break;
+			case MORETHUENTE_ORIG_WEAK:
+			default:
+				ls = new MoreThuente(f, m_param, m_xp, m_drt, step_max, step, fx, m_grad, dg, x, true);
+				break;
+			}
+			
+			fx = ls.get_fx();
+			step = ls.get_step();
+			dg = ls.get_dg();
 			
 			m_projgnorm = proj_grad_norm(x,m_grad,lb,ub);
 

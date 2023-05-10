@@ -1,15 +1,20 @@
-package org.generateme.lbfgsb;
+package org.generateme.lbfgsb.linesearch;
 
 import static org.generateme.lbfgsb.Debug.DEBUG;
 import static org.generateme.lbfgsb.Debug.debug;
 
+import org.generateme.lbfgsb.IGradFunction;
+import org.generateme.lbfgsb.LBFGSBException;
+import org.generateme.lbfgsb.Parameters;
+import org.generateme.lbfgsb.Vector;
+
 // https://github.com/JuliaNLSolvers/LineSearches.jl/blob/master/src/morethuente.jl
 // https://github.com/SurajGupta/r-source/blob/master/src/appl/lbfgsb.c#L2976
 
-public class MoreThuente {
+public class MoreThuente extends AbstractLineSearch {
 
 	static public enum RESULT {
-		NONE, CONVERGED, OUT_RANGE, XTOL, STPMAX, STPMIN, MAX_ITERS
+		NONE, CONVERGED, OUT_RANGE, XTOL, STPMAX, STPMIN, MAX_ITERS, ZERODG
 	}
 
 	static public class Bool {
@@ -56,16 +61,13 @@ public class MoreThuente {
 		}
 	}
 
-	public double fx;
-	public double step;
-	public double dg;
 	public RESULT info;
 
 	public static final double eps = Math.ulp(1.0);
 	public static final int iterfinitemax = (int) (-(Math.log(eps)) / Math.log(2.0));
 
 	public MoreThuente(IGradFunction fun, Parameters param, double[] xp, double[] drt, double step_max, double _step,
-			double _fx, double[] grad, double _dg, double[] x) throws LBFGSBException {
+			double _fx, double[] grad, double _dg, double[] x, boolean weakwolfe) throws LBFGSBException {
 		if (DEBUG) {
 			debug('-', "line search");
 			debug("      xp: ", xp);
@@ -97,8 +99,8 @@ public class MoreThuente {
 
 		double finit = fx;
 		double ginit = dg;
-		double gtest = param.ftol * dg; // first wolfe condition
-		double ctest = -param.wolfe * dg; // curvature test, second wolfe condition
+		double gtest = param.ftol * dg; // armijo condition
+		double ctest = param.wolfe * dg; // curvature test, wolfe condition
 		double width = stpmax - stpmin;
 		double width1 = 2.0 * width;
 
@@ -129,7 +131,7 @@ public class MoreThuente {
 
 		if (DEBUG) {
 			debug('>', "entering loop");
-			debug("     alpha: " + stp);
+			debug("       stp: " + stp);
 			debug("       stx: " + stx);
 		}
 
@@ -143,6 +145,7 @@ public class MoreThuente {
 			dg = phidphi.dg;
 
 			if (Math.abs(dg) < eps) {
+				this.info = RESULT.ZERODG;
 				this.step = stp;
 				this.fx = f;
 
@@ -177,7 +180,9 @@ public class MoreThuente {
 			if (bracketed.b && (stmax - stmin) <= param.xtol * stmax) {
 				info = RESULT.XTOL;
 			}
-			if (f <= ftest && Math.abs(dg) <= ctest) {
+			if ((!weakwolfe && f <= ftest && Math.abs(dg) <= -ctest) || // strong wolfe
+					(weakwolfe && f <= ftest && dg >= ctest) // weak wolfe
+			) {
 				info = RESULT.CONVERGED;
 			}
 
@@ -279,7 +284,7 @@ public class MoreThuente {
 			if (DEBUG) {
 				debug("  stmin: " + stmin);
 				debug("  stmax: " + stmax);
-				debug("  alpha: " + stp);
+				debug("  stp: " + stp);
 			}
 
 			iter++;
@@ -461,7 +466,7 @@ public class MoreThuente {
 		cs.stp = stpf;
 
 		if (DEBUG) {
-			debug("= [2]alpha: " + cs.stp);
+			debug("= [2]stp: " + cs.stp);
 		}
 	}
 }

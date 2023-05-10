@@ -1,8 +1,13 @@
-package org.generateme.lbfgsb;
+package org.generateme.lbfgsb.linesearch;
 
 import static org.generateme.lbfgsb.Debug.*;
 
-public final class LineSearch {
+import org.generateme.lbfgsb.IGradFunction;
+import org.generateme.lbfgsb.LBFGSBException;
+import org.generateme.lbfgsb.Parameters;
+import org.generateme.lbfgsb.Vector;
+
+public final class LineSearch extends AbstractLineSearch {
 
 	static public class Bool {
 		boolean b;
@@ -15,10 +20,6 @@ public final class LineSearch {
 			this.b = b;
 		}
 	}
-
-	public double fx;
-	public double step;
-	public double dg;
 
 	public static final double eps = Math.ulp(1.0);
 
